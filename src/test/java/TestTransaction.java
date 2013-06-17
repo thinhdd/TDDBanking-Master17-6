@@ -2,6 +2,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.Calendar;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.*;
 public class TestTransaction {
     public BankAccountDAO mockDao = mock(BankAccountDAO.class);
     public TransactionDAO mockTDAO = mock(TransactionDAO.class);
+    public Calendar calendar = mock(Calendar.class);
     String accountNumber = "12345678";
     @Before
     public void setUp()
@@ -37,5 +39,20 @@ public class TestTransaction {
         List<BankAccountDTO> list = ac.getAllValues();
         assertEquals(list.get(1).getAccountNumber(), accountNumber);
         assertEquals(list.get(1).getBalance(), 200.0);
+    }
+    @Test
+    public void saveDepositDB()
+    {
+        BankAccountDTO account = BankAccount.openAccount(accountNumber);
+        ArgumentCaptor<TransactionDTO> act = ArgumentCaptor.forClass(TransactionDTO.class);
+        when(mockDao.getAccount(accountNumber)).thenReturn(account);
+        when(calendar.getTimeInMillis()).thenReturn(1000l);
+        BankAccount.doDeposit(accountNumber,100.0, "Them 100k");
+        verify(mockTDAO).save(act.capture());
+        assertEquals(act.getValue().getAccount(), accountNumber );
+        assertEquals(act.getValue().getAmount(), 100.0);
+        assertEquals(act.getValue().getDes(), "Them 100k");
+        assertEquals(act.getValue().getTimeStamp(), 1000l);
+
     }
 }
