@@ -22,4 +22,7 @@ public class BankAccount {
         BankAccountDTO account = bankAccountDAO.getAccount(accountNumber);
         return account;  //To change body of created methods use File | Settings | File Templates.
     }
+
+    public static void doDeposit(String accountNumber, double amount, String des) {
+    }
 }
