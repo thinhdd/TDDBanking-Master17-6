@@ -45,14 +45,14 @@ public class TestTransaction {
     {
         BankAccountDTO account = BankAccount.openAccount(accountNumber);
         ArgumentCaptor<TransactionDTO> act = ArgumentCaptor.forClass(TransactionDTO.class);
+        TransactionDTO.setCalendar(calendar);
         when(mockDao.getAccount(accountNumber)).thenReturn(account);
         when(calendar.getTimeInMillis()).thenReturn(1000l);
         BankAccount.doDeposit(accountNumber,100.0, "Them 100k");
         verify(mockTDAO).save(act.capture());
-        assertEquals(act.getValue().getAccount(), accountNumber );
+        assertEquals(act.getValue().getAccountNumber(), accountNumber );
         assertEquals(act.getValue().getAmount(), 100.0);
         assertEquals(act.getValue().getDes(), "Them 100k");
         assertEquals(act.getValue().getTimeStamp(), 1000l);
-
     }
 }
